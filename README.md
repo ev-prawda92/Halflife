@@ -24,9 +24,27 @@ halflife demo
 
 Then pick the way in that fits what you have.
 
+### You build with Claude Code, Cursor or Codex → let your coding agent use it
+
+Most agents today are built with a coding agent. Give it halflife once and it checks every agent it builds for you:
+
+```
+claude mcp add halflife -- halflife mcp
+```
+
+Then ask it in plain words: *"check how reliable my agent is on long tasks and fix what breaks."* It runs the benchmark or audits your logs, reads where runs broke and why, proposes a change for you to approve, and replays exactly the failing cases to prove the fix worked. A Claude skill and setup for other editors are in [`integrations/`](integrations/).
+
 ### You have agent logs → audit them
 
-No setup, any framework, any model. Point it at your logs (JSON Lines of tool calls) and write down what must always be true:
+No setup, any framework, any model. Point it at your logs (JSON Lines of tool calls) and let halflife find the rules your agent follows:
+
+```
+halflife audit agent_logs.jsonl --suggest-rules
+```
+
+It mines patterns from your own runs (a lookup before every action, one notification per claim, every listed item handled), writes them to `rules_suggested.py` with how often each held, and audits against them. Rules that held in every run guard future runs. Rules that broke in a few runs point straight at the runs that went wrong. The file describes what your agent *usually* does, so read it, delete anything that's coincidence, and keep what's policy.
+
+Or write the rules yourself:
 
 ```python
 from halflife.rules import at_most_once, covers, eventually, requires
@@ -43,7 +61,7 @@ RULES = [
 halflife audit agent_logs.jsonl --rules rules.py
 ```
 
-You get the half-life measured in tool calls, which rules break and how often, and where. No answer key needed. Try it on the sample: `halflife audit examples/traces/claims.jsonl --rules examples/rules_claims.py`.
+You get the half-life measured in tool calls, which rules break and how often, and where. No answer key needed. Try it on the sample: `halflife audit examples/traces/claims.jsonl --suggest-rules`.
 
 ### You have agent code → benchmark it
 
@@ -68,14 +86,6 @@ halflife bench --model ollama:qwen2.5:7b --model anthropic:claude-sonnet-5-5 --q
 ```
 
 Built-in agents for Ollama, LM Studio, vLLM, OpenAI, OpenRouter, Together, Groq, Anthropic, and any OpenAI-compatible server. No code.
-
-### You use Claude Code or Cursor → let your coding agent fix your agent
-
-```
-claude mcp add halflife -- halflife mcp
-```
-
-Your coding agent can now run the benchmark, read what broke and how to fix it, change your code, and replay exactly the failing cases until it holds up. A Claude skill is in [`integrations/`](integrations/).
 
 ## Every run tells you what to do next
 

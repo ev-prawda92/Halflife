@@ -25,8 +25,9 @@ halflife has no dependencies beyond Python 3.9+.
 ## Pick the entry point
 
 1. **The user has agent logs** (JSON Lines of tool calls): audit them. No setup needed.
-   - `halflife audit their_logs.jsonl`
-   - Write rules for what must always hold (see Rules below) into `halflife_rules.py`, then `halflife audit their_logs.jsonl --rules halflife_rules.py`.
+   - `halflife audit their_logs.jsonl --suggest-rules` mines rules from the logs into `rules_suggested.py` and audits with them.
+   - Show the user the suggested rules and ask which are real policy. Mined rules describe what the agent usually does, not what it should do: delete coincidences, add what's missing (see Rules below), then `halflife audit their_logs.jsonl --rules rules_suggested.py`.
+   - A suggested rule that broke in a few runs is the first thing to investigate: either the agent failed in those runs or the rule is wrong.
 2. **The user has agent code**: benchmark it.
    - Run `halflife init` to scaffold `halflife_agent.py` and `halflife_rules.py`.
    - Edit `halflife_agent.py` so `my_agent(task)` calls the user's agent. The task provides `task.instructions`, `task.openai_tools()` or `task.anthropic_tools()`, and `task.call(name, args)` to execute tools. Adapt the user's tool-use loop to these; don't rewrite their agent.

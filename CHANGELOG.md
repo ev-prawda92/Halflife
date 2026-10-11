@@ -2,6 +2,7 @@
 
 ## 0.3.0
 
+- `halflife audit --suggest-rules`: mine rules from your own logs (look-before-act, finish-what-you-start, no duplicates, every listed item handled), written to a reviewable file with how often each held. Also available to coding agents through the MCP server
 - `halflife audit`: check any agent's logs against rules and measure half-life in tool calls, no setup
 - Rules library: `requires`, `at_most_once`, `eventually`, `covers`, `never`, `no_loops`, `recovers_from_errors`, and custom rules
 - `--rules` and `--save-traces` for benchmark runs
