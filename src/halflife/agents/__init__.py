@@ -63,4 +63,31 @@ def from_spec(spec: str, base_url: Optional[str] = None, temperature: float = 0.
     return OpenAICompatibleAgent(model, url, api_key=key, temperature=temperature, name=name)
 
 
-__all__ = ["AnthropicAgent", "OpenAICompatibleAgent", "ModelAPIError", "from_spec", "PROVIDERS"]
+def preflight(agent, timeout: float = 4.0) -> Optional[str]:
+    """Return a plain-English problem if the model server can't be reached, else None."""
+    import urllib.error
+    import urllib.request
+
+    if isinstance(agent, AnthropicAgent):
+        return None if agent.api_key else "ANTHROPIC_API_KEY is not set"
+    url = agent.base_url.rstrip("/") + "/models"
+    headers = {"authorization": f"Bearer {agent.api_key}"} if agent.api_key else {}
+    try:
+        urllib.request.urlopen(urllib.request.Request(url, headers=headers), timeout=timeout)
+        return None
+    except urllib.error.HTTPError as exc:
+        if exc.code in (401, 403):
+            return f"the server at {agent.base_url} rejected the API key ({exc.code})"
+        return None
+    except (urllib.error.URLError, OSError):
+        host = agent.base_url.split("/v1")[0]
+        if "11434" in host:
+            return (
+                f"can't reach Ollama at {host}. Is it installed and running? Start it with:\n"
+                "    OLLAMA_CONTEXT_LENGTH=32768 ollama serve\n"
+                "  and pull the model first, e.g.: ollama pull qwen2.5:7b"
+            )
+        return f"can't reach the model server at {host}. Is it running?"
+
+
+__all__ = ["preflight", "AnthropicAgent", "OpenAICompatibleAgent", "ModelAPIError", "from_spec", "PROVIDERS"]

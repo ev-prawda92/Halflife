@@ -29,8 +29,9 @@ def test_second_run_shows_change(tmp_path, capsys):
     assert "Since last run" not in capsys.readouterr().out
     main(args)
     assert "Since last run" in capsys.readouterr().out
-    assert os.path.exists(os.path.join(out, "badge.svg"))
-    endpoint = json.load(open(os.path.join(out, "badge.json")))
+    assert os.path.exists(os.path.join(out, "badge", "badge.svg"))
+    assert not any(f.startswith("badge") for f in os.listdir(out) if os.path.isfile(os.path.join(out, f)))
+    endpoint = json.load(open(os.path.join(out, "badge", "badge.json")))
     assert endpoint["schemaVersion"] == 1 and endpoint["label"] == "agent half-life"
 
 

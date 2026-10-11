@@ -90,3 +90,12 @@ def test_bench_cli_compare_and_replay(tmp_path, monkeypatch):
     finally:
         noisy.close()
         perfect.close()
+
+
+def test_bench_fails_fast_when_server_is_down(capsys):
+    import time
+
+    started = time.time()
+    code = main(["bench", "--model", "compatible:x", "--base-url", "http://127.0.0.1:9/v1", "--quick", "--quiet"])
+    assert code == 2 and time.time() - started < 10
+    assert "can't reach" in capsys.readouterr().err

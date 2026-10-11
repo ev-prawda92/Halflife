@@ -84,9 +84,11 @@ def _finish(report: Report, args: argparse.Namespace) -> int:
     paths = report.save(args.out, html_report=not args.no_html)
     if not report.config.get("replay"):
         b = badge(report)
-        with open(os.path.join(args.out, "badge.json"), "w") as f:
+        bdir = os.path.join(args.out, "badge")
+        os.makedirs(bdir, exist_ok=True)
+        with open(os.path.join(bdir, "badge.json"), "w") as f:
             json.dump(b["endpoint"], f)
-        with open(os.path.join(args.out, "badge.svg"), "w") as f:
+        with open(os.path.join(bdir, "badge.svg"), "w") as f:
             f.write(b["svg"])
     delta = delta_text(report, prev)
     if delta:
@@ -178,8 +180,14 @@ def cmd_bench(args: argparse.Namespace) -> int:
 
     code = 0
     reports = []
+    from .agents import preflight
+
     for spec in args.model:
         agent = from_spec(spec, base_url=args.base_url, temperature=args.temperature)
+        problem = preflight(agent)
+        if problem:
+            print(f"halflife: {spec}: {problem}", file=sys.stderr)
+            return 2
         if not args.quiet:
             print(f"\nBenchmarking {spec} on {args.suite or 'claims-intake'} …")
             if spec.startswith("ollama:") and not os.environ.get("OLLAMA_CONTEXT_LENGTH"):
