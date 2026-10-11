@@ -35,7 +35,7 @@ Any assistant that supports MCP servers over stdio can use the same command.
 | `run_benchmark` | Benchmark an agent file; returns half-life, failure modes, fixes, and the eval pack path |
 | `replay_failures` | Re-run only the previously failing cases after a fix |
 | `bench_model` | Benchmark a model directly, e.g. `ollama:qwen2.5:7b` |
-| `audit_traces` | Check recorded logs against rules |
+| `audit_traces` | Check recorded logs against rules, or suggest rules from the logs first |
 | `show_task` | Show what an agent receives, optionally with the answer key |
 | `list_suites` | List built-in suites |
 

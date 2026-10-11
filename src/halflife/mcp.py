@@ -134,8 +134,20 @@ def tool_audit_traces(args: dict) -> str:
     from .traces import audit
 
     rules = load_rules(args["rules"]) if args.get("rules") else []
+    head = ""
+    if args.get("suggest_rules"):
+        from .suggest import write
+
+        out = args.get("rules_out") or "rules_suggested.py"
+        mined, sugs = write(args["traces"], out, min_confidence=float(args.get("min_confidence") or 0.8))
+        rules = rules + mined
+        with open(out) as f:
+            head = (
+                f"Suggested {len(sugs)} rule(s), written to {out}. They describe what the agent usually does; "
+                "review them with the user before treating them as policy.\n\n" + f.read() + "\n"
+            )
     report = audit(args["traces"], rules, workflow_length=args.get("workflow_length"))
-    return _report_payload(report, report.save(args.get("out") or ".halflife"))
+    return head + _report_payload(report, report.save(args.get("out") or ".halflife"))
 
 
 def _schema(props: Dict[str, dict], required: List[str]) -> dict:
@@ -183,8 +195,18 @@ TOOLS: Dict[str, Dict[str, Any]] = {
     },
     "audit_traces": {
         "fn": tool_audit_traces,
-        "description": "Check recorded agent logs (JSON Lines of tool calls) against rules and estimate the half-life from them.",
-        "inputSchema": _schema({"traces": S("Path to a .jsonl trace file"), "rules": S("Python file defining RULES"), "workflow_length": I("Real workflow length")}, ["traces"]),
+        "description": "Check recorded agent logs (JSON Lines of tool calls) against rules and estimate the half-life from them. With no rules file, set suggest_rules to mine rules from the logs first.",
+        "inputSchema": _schema(
+            {
+                "traces": S("Path to a .jsonl trace file"),
+                "rules": S("Python file defining RULES"),
+                "suggest_rules": {"type": "boolean", "description": "Mine rules from the logs, write them to a file and audit with them"},
+                "rules_out": S("Where to write suggested rules (default rules_suggested.py; never overwrites)"),
+                "min_confidence": {"type": "number", "description": "Share of cases a pattern must hold in to be suggested (default 0.8)"},
+                "workflow_length": I("Real workflow length"),
+            },
+            ["traces"],
+        ),
     },
 }
 

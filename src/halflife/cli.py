@@ -134,8 +134,23 @@ def cmd_audit(args: argparse.Namespace) -> int:
     from .traces import audit
 
     rules = load(args.rules) if args.rules else []
+    suggested = None
+    if args.suggest_rules:
+        from .suggest import write
+
+        mined, suggested = write(args.traces, args.suggest_rules, min_confidence=args.min_confidence)
+        rules = rules + mined
+    elif not rules and not args.quiet:
+        print("  No --rules given: checking only for loops and repeated failing calls.")
+        print("  Add --suggest-rules to get rules mined from these logs.")
     report = audit(args.traces, rules, name=args.name, include_defaults=not args.no_default_rules, workflow_length=args.workflow_length)
-    return _finish(report, args)
+    code = _finish(report, args)
+    if suggested is not None and not args.quiet:
+        from .suggest import print_summary
+
+        print()
+        print_summary(suggested, args.suggest_rules)
+    return code
 
 
 def _evaluate(agent, name: str, cfg: BenchmarkConfig, args: argparse.Namespace) -> Report:
@@ -372,6 +387,11 @@ def main(argv: Optional[List[str]] = None) -> int:
     aud.add_argument("--rules", help="Python file defining RULES = [...]")
     aud.add_argument("--name", help="label for the report")
     aud.add_argument("--no-default-rules", action="store_true", help="skip the built-in loop and error-recovery rules")
+    aud.add_argument(
+        "--suggest-rules", nargs="?", const="rules_suggested.py", metavar="PATH",
+        help="mine rules from these logs, write them to PATH (default rules_suggested.py) and audit with them",
+    )
+    aud.add_argument("--min-confidence", type=float, default=0.8, help="share of cases a pattern must hold in to be suggested (default 0.8)")
     aud.add_argument("--out", default=".halflife")
     aud.add_argument("--min-half-life", type=float)
     aud.add_argument("--workflow-length", type=int)
