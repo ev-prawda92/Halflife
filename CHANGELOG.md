@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- VS Code extension in `integrations/vscode` (also works in Cursor and Windsurf)
+- Replays and runs started in the same second no longer overwrite each other's result files
+
 ## 0.3.0
 
 - `halflife audit --suggest-rules`: mine rules from your own logs (look-before-act, finish-what-you-start, no duplicates, every listed item handled), written to a reviewable file with how often each held. Also available to coding agents through the MCP server

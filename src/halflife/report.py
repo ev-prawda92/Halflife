@@ -372,6 +372,11 @@ class Report:
         os.makedirs(out_dir, exist_ok=True)
         stamp = self.created_at.replace("-", "").replace(":", "").replace("T", "-").rstrip("Z")
         slug = re.sub(r"[^A-Za-z0-9_.-]+", "-", f"{self.suite}-{self.agent}-{stamp}")
+        if self.config.get("replay"):
+            slug += "-replay"
+        base, n = slug, 2
+        while os.path.exists(os.path.join(out_dir, slug + ".json")):
+            slug, n = f"{base}-{n}", n + 1
         paths = {"json": os.path.join(out_dir, slug + ".json")}
         with open(paths["json"], "w") as f:
             json.dump(self.to_dict(), f, indent=2)

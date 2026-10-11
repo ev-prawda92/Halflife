@@ -1,0 +1,98 @@
+{
+  "name": "halflife",
+  "displayName": "Halflife: Agent Reliability",
+  "description": "See how long a task you can trust your AI agent with, where it breaks, and what to fix, right next to your code.",
+  "version": "0.1.0",
+  "publisher": "ev-prawda92",
+  "license": "Apache-2.0",
+  "repository": { "type": "git", "url": "https://github.com/ev-prawda92/halflife", "directory": "integrations/vscode" },
+  "homepage": "https://github.com/ev-prawda92/halflife#readme",
+  "bugs": { "url": "https://github.com/ev-prawda92/halflife/issues" },
+  "engines": { "vscode": "^1.85.0" },
+  "categories": ["Testing", "Machine Learning", "Other"],
+  "keywords": ["ai agents", "llm", "evaluation", "reliability", "benchmark", "mcp"],
+  "icon": "media/icon.png",
+  "main": "./out/src/extension.js",
+  "activationEvents": ["onLanguage:python", "workspaceContains:.halflife/*.json"],
+  "contributes": {
+    "commands": [
+      { "command": "halflife.runQuick", "title": "Run Quick Benchmark", "category": "Halflife", "icon": "$(play)" },
+      { "command": "halflife.runFull", "title": "Run Full Benchmark", "category": "Halflife" },
+      { "command": "halflife.replay", "title": "Replay Failing Cases", "category": "Halflife", "icon": "$(debug-rerun)" },
+      { "command": "halflife.audit", "title": "Audit Agent Logs", "category": "Halflife", "icon": "$(checklist)" },
+      { "command": "halflife.fix", "title": "Fix With Your Coding Agent", "category": "Halflife", "icon": "$(sparkle)" },
+      { "command": "halflife.openReport", "title": "Open Full Report", "category": "Halflife", "icon": "$(link-external)" },
+      { "command": "halflife.demo", "title": "Try the Demo", "category": "Halflife" },
+      { "command": "halflife.install", "title": "Install or Update the Halflife CLI", "category": "Halflife" },
+      { "command": "halflife.refresh", "title": "Refresh Results", "category": "Halflife", "icon": "$(refresh)" },
+      { "command": "halflife.showRun", "title": "Show Failing Run", "category": "Halflife" },
+      { "command": "halflife.selectResult", "title": "Show This Result", "category": "Halflife" }
+    ],
+    "viewsContainers": {
+      "activitybar": [{ "id": "halflife", "title": "Halflife", "icon": "media/activity.svg" }]
+    },
+    "views": {
+      "halflife": [{ "id": "halflife.results", "name": "Reliability" }]
+    },
+    "viewsWelcome": [
+      {
+        "view": "halflife.results",
+        "contents": "No halflife results in this workspace yet.\n[Try the Demo](command:halflife.demo)\nHave agent logs? Audit them with no setup:\n[Audit Agent Logs](command:halflife.audit)\nHave agent code? Add @benchmark above your agent function, then click Run quick above it.\n[Install the CLI](command:halflife.install)"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        { "command": "halflife.audit", "when": "view == halflife.results", "group": "navigation@1" },
+        { "command": "halflife.refresh", "when": "view == halflife.results", "group": "navigation@2" }
+      ],
+      "view/item/context": [
+        { "command": "halflife.fix", "when": "view == halflife.results && viewItem =~ /result/", "group": "inline@1" },
+        { "command": "halflife.replay", "when": "view == halflife.results && viewItem =~ /replayable/", "group": "inline@2" },
+        { "command": "halflife.openReport", "when": "view == halflife.results && viewItem =~ /result/", "group": "inline@3" }
+      ],
+      "explorer/context": [
+        { "command": "halflife.audit", "when": "resourceExtname == .jsonl", "group": "halflife" },
+        { "command": "halflife.runQuick", "when": "resourceLangId == python", "group": "halflife" }
+      ],
+      "editor/title": [
+        { "command": "halflife.runQuick", "when": "resourceLangId == python && halflife.hasAgents", "group": "navigation" }
+      ],
+      "commandPalette": [
+        { "command": "halflife.showRun", "when": "false" },
+        { "command": "halflife.selectResult", "when": "false" }
+      ]
+    },
+    "configuration": {
+      "title": "Halflife",
+      "properties": {
+        "halflife.command": {
+          "type": "string",
+          "default": "halflife",
+          "description": "How to start the halflife CLI, e.g. `halflife`, `python -m halflife`, or a full path."
+        },
+        "halflife.outputFolder": {
+          "type": "string",
+          "default": ".halflife",
+          "description": "Where results are saved, relative to the workspace folder."
+        },
+        "halflife.codeLens": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show half-life and Run actions above @benchmark functions."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "compile": "tsc -p .",
+    "watch": "tsc -w -p .",
+    "test": "tsc -p . && node --test out/test/core.test.js",
+    "package": "vsce package --no-dependencies"
+  },
+  "devDependencies": {
+    "@types/node": "20.14.10",
+    "@types/vscode": "1.85.0",
+    "@vscode/vsce": "3.2.1",
+    "typescript": "5.4.5"
+  }
+}
