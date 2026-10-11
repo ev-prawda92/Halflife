@@ -10,6 +10,10 @@ claude mcp add halflife -- halflife mcp
 
 Then ask Claude Code to test your agent. It can run benchmarks, read where runs broke, change your code, and replay exactly the failing cases.
 
+## VS Code, Cursor and Windsurf
+
+`vscode/` is an extension that puts the half-life above every `@benchmark` function, shows where runs broke in a sidebar, audits log files from the Explorer, and sends fixes to your coding agent for you to approve. See [`vscode/README.md`](vscode/README.md).
+
 ## Claude (skill)
 
 `claude-skill/halflife/` is a skill that teaches Claude when and how to use halflife: whenever you're building, changing, or shipping an agent. Zip the `halflife` folder and add it as a skill in Claude.

@@ -259,6 +259,9 @@ class Report:
         lo, hi = self.ci
         if lo is None or hi is None:
             return ""
+        if math.isinf(lo):
+            # no failures at all: there's no lower bound to report, and the half-life text already says so
+            return ""
         longest = self._lengths()[1]
         fmt = lambda v: "inf" if math.isinf(v) else f"{v:.1f}"
         if math.isinf(hi) or hi > 3 * longest:
@@ -372,6 +375,11 @@ class Report:
         os.makedirs(out_dir, exist_ok=True)
         stamp = self.created_at.replace("-", "").replace(":", "").replace("T", "-").rstrip("Z")
         slug = re.sub(r"[^A-Za-z0-9_.-]+", "-", f"{self.suite}-{self.agent}-{stamp}")
+        if self.config.get("replay"):
+            slug += "-replay"
+        base, n = slug, 2
+        while os.path.exists(os.path.join(out_dir, slug + ".json")):
+            slug, n = f"{base}-{n}", n + 1
         paths = {"json": os.path.join(out_dir, slug + ".json")}
         with open(paths["json"], "w") as f:
             json.dump(self.to_dict(), f, indent=2)
