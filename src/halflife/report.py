@@ -259,6 +259,9 @@ class Report:
         lo, hi = self.ci
         if lo is None or hi is None:
             return ""
+        if math.isinf(lo):
+            # no failures at all: there's no lower bound to report, and the half-life text already says so
+            return ""
         longest = self._lengths()[1]
         fmt = lambda v: "inf" if math.isinf(v) else f"{v:.1f}"
         if math.isinf(hi) or hi > 3 * longest:

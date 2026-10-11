@@ -3,6 +3,7 @@
 ## Unreleased
 
 - VS Code extension in `integrations/vscode` (also works in Cursor and Windsurf)
+- No more "95% CI ≥ inf" when every run passed
 - Replays and runs started in the same second no longer overwrite each other's result files
 
 ## 0.3.0

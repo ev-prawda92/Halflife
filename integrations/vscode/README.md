@@ -9,7 +9,7 @@ Works in VS Code, Cursor, Windsurf and other editors built on VS Code.
 ## Get started
 
 1. Install the CLI (Python 3.9+): `pip install halflife-ai`, or run **Halflife: Install or Update the Halflife CLI** from the Command Palette.
-2. Open the Halflife sidebar and click **Try the Demo** to see a full result in under a minute.
+2. Open a folder, open the Halflife sidebar and click **Try the Demo**. It adds `halflife_demo_agent.py`, a small claims agent with bugs on purpose, and runs it. Click **✦ Fix with coding agent** above it, approve the change, and watch the half-life go up.
 
 Then pick the way in that fits what you have.
 

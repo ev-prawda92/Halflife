@@ -631,8 +631,20 @@ export function activate(context: vscode.ExtensionContext): void {
     }),
 
     vscode.commands.registerCommand("halflife.demo", async () => {
-      const ok = await runner.run("demo", ["demo", "--quick", "--out", cfg().outputFolder]);
-      if (ok) afterRun();
+      const r = root();
+      if (!r) return void vscode.window.showErrorMessage("Halflife: open a folder first, so the demo has somewhere to go.");
+      const target = path.join(r, "halflife_demo_agent.py");
+      const created = !fs.existsSync(target);
+      if (created) fs.copyFileSync(path.join(context.extensionPath, "media", "halflife_demo_agent.py"), target);
+      const uri = vscode.Uri.file(target);
+      const doc = await vscode.workspace.openTextDocument(uri);
+      await vscode.window.showTextDocument(doc, { preview: false });
+      if (created) {
+        vscode.window.showInformationMessage(
+          "Halflife: added halflife_demo_agent.py, a small claims agent with bugs on purpose. Running it now. Then click ✦ Fix with coding agent above it."
+        );
+      }
+      await runAgent(true, uri, "claims_agent");
     }),
 
     vscode.commands.registerCommand("halflife.install", () => {

@@ -37,7 +37,7 @@
     "viewsWelcome": [
       {
         "view": "halflife.results",
-        "contents": "No halflife results in this workspace yet.\n[Try the Demo](command:halflife.demo)\nHave agent logs? Audit them with no setup:\n[Audit Agent Logs](command:halflife.audit)\nHave agent code? Add @benchmark above your agent function, then click Run quick above it.\n[Install the CLI](command:halflife.install)"
+        "contents": "No halflife results in this workspace yet.\nTry it on a small sample agent with bugs on purpose: see where it breaks, fix it with your coding agent, and watch the half-life go up.\n[Try the Demo](command:halflife.demo)\nHave agent logs? Audit them with no setup:\n[Audit Agent Logs](command:halflife.audit)\nHave agent code? Add @benchmark above your agent function, then click Run quick above it.\n[Install the CLI](command:halflife.install)"
       }
     ],
     "menus": {
