@@ -9,7 +9,18 @@ halflife measures an agent's **reliability half-life**: the task length at which
 
 ## Setup
 
-Check `halflife --version`. If missing, install it: `pip install halflife-ai`.
+Check `halflife --version`. If it's missing, install it in this order, stopping at the first that works:
+
+1. `pip install halflife-ai`
+2. `pip install` the wheel bundled in this skill's folder: `pip install <this skill's folder>/halflife_ai-*.whl` (add `--break-system-packages` if pip refuses to install into the system Python)
+3. `pip install git+https://github.com/ev-prawda92/Halflife`
+
+halflife has no dependencies beyond Python 3.9+.
+
+## Where it can run
+
+- **In a chat with code execution:** audit uploaded logs, benchmark uploaded agent code, run the demo, write rules or a custom suite, and read result files the user uploads. Hosted model APIs and local servers like Ollama usually aren't reachable from here; if a model benchmark is needed, give the user the exact `halflife bench` command to run on their own machine.
+- **In Claude Code or a terminal on the user's machine:** everything, including `halflife bench` against local or hosted models.
 
 ## Pick the entry point
 
